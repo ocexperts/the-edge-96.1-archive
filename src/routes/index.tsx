@@ -64,12 +64,25 @@ function Home() {
                 drives stay with us. This is a fan-made memorial to Sydney's loudest pop home.
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
-                <button className="bg-white text-hot-pink font-bold font-display tracking-widest px-6 py-3 rounded-lg shadow-pink hover:scale-[1.02] transition-transform">
-                  PLAY THE TRIBUTE STREAM
+                <button
+                  onClick={toggle}
+                  className="inline-flex items-center gap-2 bg-white text-hot-pink font-bold font-display tracking-widest px-6 py-3 rounded-lg shadow-pink hover:scale-[1.02] transition-transform"
+                >
+                  {loading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : playing ? (
+                    <Pause className="w-5 h-5 fill-current" />
+                  ) : (
+                    <Play className="w-5 h-5 fill-current" />
+                  )}
+                  {loading ? "BUFFERING…" : playing ? "STOP THE TRIBUTE STREAM" : "PLAY THE TRIBUTE STREAM"}
                 </button>
-                <button className="border border-white/40 hover:bg-white/10 font-display tracking-widest px-6 py-3 rounded-lg">
+                <Link
+                  to="/stories"
+                  className="border border-white/40 hover:bg-white/10 font-display tracking-widest px-6 py-3 rounded-lg"
+                >
                   SHARE A MEMORY
-                </button>
+                </Link>
               </div>
             </div>
             <div className="relative h-72 md:h-[28rem]">
