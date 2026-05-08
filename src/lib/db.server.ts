@@ -6,13 +6,13 @@ declare global {
 }
 
 export const pool =
-  global.__pgPool ??
+  globalThis.__pgPool ??
   new Pool({
     connectionString: process.env.DATABASE_URL,
     max: 10,
   });
 
-if (process.env.NODE_ENV !== "production") global.__pgPool = pool;
+if (process.env.NODE_ENV !== "production") globalThis.__pgPool = pool;
 
 export async function query<T = unknown>(
   text: string,
