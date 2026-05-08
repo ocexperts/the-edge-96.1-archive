@@ -131,9 +131,11 @@ function Home() {
           </div>
           <div className="bg-card/60 border border-hot-pink/30 border-t-0 rounded-b-xl p-5 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {FEATURE_TILES.map((t) => (
-              <article
+              <Link
                 key={t.title}
-                className="group rounded-lg overflow-hidden bg-deep-purple/60 border border-hot-pink/20 hover:border-hot-pink transition-colors"
+                to="/shows/$slug"
+                params={{ slug: t.slug }}
+                className="group rounded-lg overflow-hidden bg-deep-purple/60 border border-hot-pink/20 hover:border-hot-pink transition-colors block"
               >
                 <div
                   className="aspect-video bg-hero-gradient relative overflow-hidden"
@@ -153,7 +155,7 @@ function Home() {
                   </h3>
                   <p className="text-xs text-muted-foreground mt-1">Read the throwback →</p>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </section>
