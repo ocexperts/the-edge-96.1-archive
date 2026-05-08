@@ -73,9 +73,9 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShowsSlugRoute = ShowsSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => ShowsRoute,
+  id: '/shows/$slug',
+  path: '/shows/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
@@ -181,6 +181,7 @@ export interface RootRouteChildren {
   VideosRoute: typeof VideosRoute
   WinRoute: typeof WinRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  ShowsSlugRoute: typeof ShowsSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   ShowsIndexRoute: typeof ShowsIndexRoute
 }
@@ -259,10 +260,10 @@ declare module '@tanstack/react-router' {
     }
     '/shows/$slug': {
       id: '/shows/$slug'
-      path: '/$slug'
+      path: '/shows/$slug'
       fullPath: '/shows/$slug'
       preLoaderRoute: typeof ShowsSlugRouteImport
-      parentRoute: typeof ShowsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/admin/login': {
       id: '/admin/login'
@@ -284,19 +285,10 @@ const rootRouteChildren: RootRouteChildren = {
   VideosRoute: VideosRoute,
   WinRoute: WinRoute,
   AdminLoginRoute: AdminLoginRoute,
+  ShowsSlugRoute: ShowsSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   ShowsIndexRoute: ShowsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
