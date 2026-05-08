@@ -47,6 +47,12 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
+  --color-hot-pink: var(--hot-pink);
+  --color-hot-pink-foreground: var(--hot-pink-foreground);
+  --color-deep-purple: var(--deep-purple);
+  --color-neon: var(--neon);
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-sans: 'Montserrat', sans-serif;
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
