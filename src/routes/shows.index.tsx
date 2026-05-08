@@ -3,7 +3,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SHOWS } from "@/lib/shows";
 
-export const Route = createFileRoute("/shows")({
+export const Route = createFileRoute("/shows/")({
   head: () => ({
     meta: [
       { title: "Shows — The Edge 96.1 Memorial" },
