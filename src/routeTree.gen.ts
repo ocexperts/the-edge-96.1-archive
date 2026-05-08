@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WinRouteImport } from './routes/win'
 import { Route as VideosRouteImport } from './routes/videos'
+import { Route as StoriesRouteImport } from './routes/stories'
 import { Route as ShowsRouteImport } from './routes/shows'
 import { Route as PhotosRouteImport } from './routes/photos'
 import { Route as MusicRouteImport } from './routes/music'
@@ -26,6 +27,11 @@ const WinRoute = WinRouteImport.update({
 const VideosRoute = VideosRouteImport.update({
   id: '/videos',
   path: '/videos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoriesRoute = StoriesRouteImport.update({
+  id: '/stories',
+  path: '/stories',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShowsRoute = ShowsRouteImport.update({
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/music': typeof MusicRoute
   '/photos': typeof PhotosRoute
   '/shows': typeof ShowsRoute
+  '/stories': typeof StoriesRoute
   '/videos': typeof VideosRoute
   '/win': typeof WinRoute
 }
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/music': typeof MusicRoute
   '/photos': typeof PhotosRoute
   '/shows': typeof ShowsRoute
+  '/stories': typeof StoriesRoute
   '/videos': typeof VideosRoute
   '/win': typeof WinRoute
 }
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/music': typeof MusicRoute
   '/photos': typeof PhotosRoute
   '/shows': typeof ShowsRoute
+  '/stories': typeof StoriesRoute
   '/videos': typeof VideosRoute
   '/win': typeof WinRoute
 }
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/music'
     | '/photos'
     | '/shows'
+    | '/stories'
     | '/videos'
     | '/win'
   fileRoutesByTo: FileRoutesByTo
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/music'
     | '/photos'
     | '/shows'
+    | '/stories'
     | '/videos'
     | '/win'
   id:
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '/music'
     | '/photos'
     | '/shows'
+    | '/stories'
     | '/videos'
     | '/win'
   fileRoutesById: FileRoutesById
@@ -130,6 +142,7 @@ export interface RootRouteChildren {
   MusicRoute: typeof MusicRoute
   PhotosRoute: typeof PhotosRoute
   ShowsRoute: typeof ShowsRoute
+  StoriesRoute: typeof StoriesRoute
   VideosRoute: typeof VideosRoute
   WinRoute: typeof WinRoute
 }
@@ -148,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/videos'
       fullPath: '/videos'
       preLoaderRoute: typeof VideosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stories': {
+      id: '/stories'
+      path: '/stories'
+      fullPath: '/stories'
+      preLoaderRoute: typeof StoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shows': {
@@ -202,9 +222,20 @@ const rootRouteChildren: RootRouteChildren = {
   MusicRoute: MusicRoute,
   PhotosRoute: PhotosRoute,
   ShowsRoute: ShowsRoute,
+  StoriesRoute: StoriesRoute,
   VideosRoute: VideosRoute,
   WinRoute: WinRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
