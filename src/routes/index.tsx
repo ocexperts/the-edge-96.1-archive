@@ -1,10 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { useStreamPlayer } from "@/components/StreamPlayer";
 import bgPattern from "@/assets/bg-pattern.jpg";
 import heroPop from "@/assets/hero-pop.jpg";
 import breakfastShow from "@/assets/breakfast-show.jpg";
-import { Heart, Radio, Mic2, Disc3 } from "lucide-react";
+import { Heart, Radio, Mic2, Disc3, Play, Pause, Loader2 } from "lucide-react";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -33,7 +35,8 @@ const FEATURE_TILES = [
 ];
 
 function Home() {
-  return (
+  const { playing, loading, toggle } = useStreamPlayer();
+
     <div
       className="min-h-screen text-foreground"
       style={{
