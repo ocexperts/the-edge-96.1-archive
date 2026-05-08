@@ -86,6 +86,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
+      {
+        rel: "icon",
+        href: "https://web.archive.org/web/20130402170930im_/http://961.com.au/images/favicon.ico",
+      },
     ],
   }),
   shellComponent: RootShell,
