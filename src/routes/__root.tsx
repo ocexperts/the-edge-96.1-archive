@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { StreamPlayerProvider } from "@/components/StreamPlayer";
 
 function NotFoundComponent() {
   return (
