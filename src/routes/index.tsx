@@ -36,7 +36,7 @@ const FEATURE_TILES = [
 
 function Home() {
   const { playing, loading, toggle } = useStreamPlayer();
-
+  return (
     <div
       className="min-h-screen text-foreground"
       style={{
