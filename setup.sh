@@ -58,7 +58,12 @@ import { pathToFileURL } from "node:url";
 const HOST = process.env.HOST || "0.0.0.0";
 const PORT = Number(process.env.PORT || 8081);
 const CLIENT_DIR = join(process.cwd(), "dist", "client");
-const SERVER_ENTRY = join(process.cwd(), "dist", "server", "server.js");
+const SERVER_ENTRY_CANDIDATES = [
+  join(process.cwd(), "dist", "ssr", "index.js"),
+  join(process.cwd(), "dist", "server", "server.js"),
+  join(process.cwd(), "dist", "server", "index.js"),
+  join(process.cwd(), "dist", "index.js"),
+];
 
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
@@ -116,6 +121,17 @@ async function tryStatic(req, res) {
   return true;
 }
 
+async function resolveServerEntry() {
+  for (const candidate of SERVER_ENTRY_CANDIDATES) {
+    try {
+      await readFile(candidate, { flag: "r" });
+      return candidate;
+    } catch {}
+  }
+  throw new Error(`No server build found. Checked: ${SERVER_ENTRY_CANDIDATES.join(", ")}`);
+}
+
+const SERVER_ENTRY = await resolveServerEntry();
 const serverBuild = (await import(pathToFileURL(SERVER_ENTRY).href)).default;
 
 createServer(async (req, res) => {
@@ -140,7 +156,7 @@ EOF
 }
 
 start_app() {
-  if [ ! -f "dist/server/server.js" ] || [ ! -d "dist/client" ]; then
+  if [ ! -d "dist/client" ] || { [ ! -f "dist/ssr/index.js" ] && [ ! -f "dist/server/server.js" ] && [ ! -f "dist/server/index.js" ] && [ ! -f "dist/index.js" ]; }; then
     echo "No build output found. Building first..."
     install_deps
     build_app
