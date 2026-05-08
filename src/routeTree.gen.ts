@@ -19,6 +19,7 @@ import { Route as ListenRouteImport } from './routes/listen'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as ShowsSlugRouteImport } from './routes/shows.$slug'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 
 const WinRoute = WinRouteImport.update({
@@ -71,6 +72,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShowsSlugRoute = ShowsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ShowsRoute,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
@@ -83,11 +89,12 @@ export interface FileRoutesByFullPath {
   '/listen': typeof ListenRoute
   '/music': typeof MusicRoute
   '/photos': typeof PhotosRoute
-  '/shows': typeof ShowsRoute
+  '/shows': typeof ShowsRouteWithChildren
   '/stories': typeof StoriesRoute
   '/videos': typeof VideosRoute
   '/win': typeof WinRoute
   '/admin/login': typeof AdminLoginRoute
+  '/shows/$slug': typeof ShowsSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -96,11 +103,12 @@ export interface FileRoutesByTo {
   '/listen': typeof ListenRoute
   '/music': typeof MusicRoute
   '/photos': typeof PhotosRoute
-  '/shows': typeof ShowsRoute
+  '/shows': typeof ShowsRouteWithChildren
   '/stories': typeof StoriesRoute
   '/videos': typeof VideosRoute
   '/win': typeof WinRoute
   '/admin/login': typeof AdminLoginRoute
+  '/shows/$slug': typeof ShowsSlugRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
@@ -110,11 +118,12 @@ export interface FileRoutesById {
   '/listen': typeof ListenRoute
   '/music': typeof MusicRoute
   '/photos': typeof PhotosRoute
-  '/shows': typeof ShowsRoute
+  '/shows': typeof ShowsRouteWithChildren
   '/stories': typeof StoriesRoute
   '/videos': typeof VideosRoute
   '/win': typeof WinRoute
   '/admin/login': typeof AdminLoginRoute
+  '/shows/$slug': typeof ShowsSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
     | '/videos'
     | '/win'
     | '/admin/login'
+    | '/shows/$slug'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -143,6 +153,7 @@ export interface FileRouteTypes {
     | '/videos'
     | '/win'
     | '/admin/login'
+    | '/shows/$slug'
     | '/admin'
   id:
     | '__root__'
@@ -156,6 +167,7 @@ export interface FileRouteTypes {
     | '/videos'
     | '/win'
     | '/admin/login'
+    | '/shows/$slug'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -165,7 +177,7 @@ export interface RootRouteChildren {
   ListenRoute: typeof ListenRoute
   MusicRoute: typeof MusicRoute
   PhotosRoute: typeof PhotosRoute
-  ShowsRoute: typeof ShowsRoute
+  ShowsRoute: typeof ShowsRouteWithChildren
   StoriesRoute: typeof StoriesRoute
   VideosRoute: typeof VideosRoute
   WinRoute: typeof WinRoute
@@ -245,6 +257,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shows/$slug': {
+      id: '/shows/$slug'
+      path: '/$slug'
+      fullPath: '/shows/$slug'
+      preLoaderRoute: typeof ShowsSlugRouteImport
+      parentRoute: typeof ShowsRoute
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/admin/login'
@@ -255,13 +274,23 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ShowsRouteChildren {
+  ShowsSlugRoute: typeof ShowsSlugRoute
+}
+
+const ShowsRouteChildren: ShowsRouteChildren = {
+  ShowsSlugRoute: ShowsSlugRoute,
+}
+
+const ShowsRouteWithChildren = ShowsRoute._addFileChildren(ShowsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   ListenRoute: ListenRoute,
   MusicRoute: MusicRoute,
   PhotosRoute: PhotosRoute,
-  ShowsRoute: ShowsRoute,
+  ShowsRoute: ShowsRouteWithChildren,
   StoriesRoute: StoriesRoute,
   VideosRoute: VideosRoute,
   WinRoute: WinRoute,
