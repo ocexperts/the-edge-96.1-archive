@@ -4,11 +4,11 @@ module.exports = {
     {
       name: "cada",
       script: "node_modules/vite/bin/vite.js",
-      args: "preview --host 0.0.0.0 --port 3000 --strictPort",
+      args: `preview --host ${process.env.HOST || "0.0.0.0"} --port ${process.env.PORT || 8081} --strictPort`,
       env: {
         NODE_ENV: "production",
         HOST: process.env.HOST || "0.0.0.0",
-        PORT: process.env.PORT || 3000,
+        PORT: process.env.PORT || 8081,
       },
       instances: 1,
       exec_mode: "fork",
