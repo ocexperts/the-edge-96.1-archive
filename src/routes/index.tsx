@@ -1,10 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { useStreamPlayer } from "@/components/StreamPlayer";
 import bgPattern from "@/assets/bg-pattern.jpg";
 import heroPop from "@/assets/hero-pop.jpg";
 import breakfastShow from "@/assets/breakfast-show.jpg";
-import { Heart, Radio, Mic2, Disc3 } from "lucide-react";
+import { Heart, Radio, Mic2, Disc3, Play, Pause, Loader2 } from "lucide-react";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -33,6 +35,7 @@ const FEATURE_TILES = [
 ];
 
 function Home() {
+  const { playing, loading, toggle } = useStreamPlayer();
   return (
     <div
       className="min-h-screen text-foreground"
@@ -61,12 +64,25 @@ function Home() {
                 drives stay with us. This is a fan-made memorial to Sydney's loudest pop home.
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
-                <button className="bg-white text-hot-pink font-bold font-display tracking-widest px-6 py-3 rounded-lg shadow-pink hover:scale-[1.02] transition-transform">
-                  PLAY THE TRIBUTE STREAM
+                <button
+                  onClick={toggle}
+                  className="inline-flex items-center gap-2 bg-white text-hot-pink font-bold font-display tracking-widest px-6 py-3 rounded-lg shadow-pink hover:scale-[1.02] transition-transform"
+                >
+                  {loading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : playing ? (
+                    <Pause className="w-5 h-5 fill-current" />
+                  ) : (
+                    <Play className="w-5 h-5 fill-current" />
+                  )}
+                  {loading ? "BUFFERING…" : playing ? "STOP THE TRIBUTE STREAM" : "PLAY THE TRIBUTE STREAM"}
                 </button>
-                <button className="border border-white/40 hover:bg-white/10 font-display tracking-widest px-6 py-3 rounded-lg">
+                <Link
+                  to="/stories"
+                  className="border border-white/40 hover:bg-white/10 font-display tracking-widest px-6 py-3 rounded-lg"
+                >
                   SHARE A MEMORY
-                </button>
+                </Link>
               </div>
             </div>
             <div className="relative h-72 md:h-[28rem]">
@@ -151,9 +167,12 @@ function Home() {
               Whether it was a school drop-off with Mike E & Emma, a Friday night drink with the
               party mix or a request line dedication — share what The Edge meant to you.
             </p>
-            <button className="mt-5 bg-hot-pink hover:bg-hot-pink/90 font-display tracking-widest px-6 py-3 rounded-lg shadow-pink">
+            <Link
+              to="/stories"
+              className="inline-block mt-5 bg-hot-pink hover:bg-hot-pink/90 font-display tracking-widest px-6 py-3 rounded-lg shadow-pink"
+            >
               SUBMIT A MEMORY
-            </button>
+            </Link>
           </div>
           <div className="space-y-3">
             {[

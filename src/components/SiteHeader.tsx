@@ -20,7 +20,7 @@ export function SiteHeader() {
   const { playing, loading, toggle } = useStreamPlayer();
 
   return (
-    <header className="relative z-20">
+    <header className="sticky top-0 z-30 bg-deep-purple/85 backdrop-blur-md border-b border-hot-pink/20 shadow-lg shadow-black/30">
       <div className="container mx-auto px-4 pt-6 pb-3 flex flex-wrap items-center gap-6">
         <Link to="/" className="shrink-0">
           <EdgeLogo />
