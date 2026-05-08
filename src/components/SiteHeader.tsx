@@ -1,11 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
 import { EdgeLogo } from "./EdgeLogo";
 import { Equalizer } from "./Equalizer";
 import { Play, Pause, Search, Facebook, Twitter } from "lucide-react";
-
-const STREAM_URL =
-  "https://playerservices.streamtheworld.com/api/livestream-redirect/EDGEREWIND_S01AAC.aac";
+import { useStreamPlayer } from "./StreamPlayer";
 
 const NAV = [
   { label: "HOME", to: "/" },
@@ -19,54 +16,7 @@ const NAV = [
 ] as const;
 
 export function SiteHeader() {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [playing, setPlaying] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const audio = new Audio();
-    audio.preload = "none";
-    audio.crossOrigin = "anonymous";
-    audioRef.current = audio;
-    const onPlay = () => { setPlaying(true); setLoading(false); };
-    const onPause = () => setPlaying(false);
-    const onWaiting = () => setLoading(true);
-    const onPlaying = () => setLoading(false);
-    const onError = () => { setPlaying(false); setLoading(false); };
-    audio.addEventListener("play", onPlay);
-    audio.addEventListener("pause", onPause);
-    audio.addEventListener("waiting", onWaiting);
-    audio.addEventListener("playing", onPlaying);
-    audio.addEventListener("error", onError);
-    return () => {
-      audio.pause();
-      audio.removeEventListener("play", onPlay);
-      audio.removeEventListener("pause", onPause);
-      audio.removeEventListener("waiting", onWaiting);
-      audio.removeEventListener("playing", onPlaying);
-      audio.removeEventListener("error", onError);
-      audioRef.current = null;
-    };
-  }, []);
-
-  const toggle = async () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    if (playing) {
-      audio.pause();
-      audio.removeAttribute("src");
-      audio.load();
-      return;
-    }
-    setLoading(true);
-    // Cache-bust to force a fresh stream connection
-    audio.src = `${STREAM_URL}?t=${Date.now()}`;
-    try {
-      await audio.play();
-    } catch {
-      setLoading(false);
-    }
-  };
+  const { playing, loading, toggle } = useStreamPlayer();
 
   return (
     <header className="relative z-20">
