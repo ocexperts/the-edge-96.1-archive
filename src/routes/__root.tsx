@@ -117,7 +117,9 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <StreamPlayerProvider>
+        <Outlet />
+      </StreamPlayerProvider>
     </QueryClientProvider>
   );
 }
