@@ -167,9 +167,12 @@ function Home() {
               Whether it was a school drop-off with Mike E & Emma, a Friday night drink with the
               party mix or a request line dedication — share what The Edge meant to you.
             </p>
-            <button className="mt-5 bg-hot-pink hover:bg-hot-pink/90 font-display tracking-widest px-6 py-3 rounded-lg shadow-pink">
+            <Link
+              to="/stories"
+              className="inline-block mt-5 bg-hot-pink hover:bg-hot-pink/90 font-display tracking-widest px-6 py-3 rounded-lg shadow-pink"
+            >
               SUBMIT A MEMORY
-            </button>
+            </Link>
           </div>
           <div className="space-y-3">
             {[
