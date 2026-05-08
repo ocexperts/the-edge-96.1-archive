@@ -64,6 +64,9 @@ function ShowDetail() {
             <p className="text-xs tracking-[0.3em] text-hot-pink font-bold">{show.time}</p>
             <h1 className="font-display text-4xl md:text-6xl text-white text-glow mt-2">{show.name}</h1>
             <p className="text-lg text-muted-foreground mt-3 max-w-2xl">{show.tagline}</p>
+            {show.hosts && (
+              <p className="mt-3 text-sm tracking-widest text-hot-pink/90">HOSTED BY · {show.hosts}</p>
+            )}
           </div>
         </section>
 

@@ -12,12 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WinRouteImport } from './routes/win'
 import { Route as VideosRouteImport } from './routes/videos'
 import { Route as StoriesRouteImport } from './routes/stories'
-import { Route as ShowsRouteImport } from './routes/shows'
 import { Route as PhotosRouteImport } from './routes/photos'
 import { Route as MusicRouteImport } from './routes/music'
 import { Route as ListenRouteImport } from './routes/listen'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ShowsIndexRouteImport } from './routes/shows.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ShowsSlugRouteImport } from './routes/shows.$slug'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
@@ -35,11 +35,6 @@ const VideosRoute = VideosRouteImport.update({
 const StoriesRoute = StoriesRouteImport.update({
   id: '/stories',
   path: '/stories',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ShowsRoute = ShowsRouteImport.update({
-  id: '/shows',
-  path: '/shows',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PhotosRoute = PhotosRouteImport.update({
@@ -67,15 +62,20 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShowsIndexRoute = ShowsIndexRouteImport.update({
+  id: '/shows/',
+  path: '/shows/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShowsSlugRoute = ShowsSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => ShowsRoute,
+  id: '/shows/$slug',
+  path: '/shows/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
@@ -89,13 +89,13 @@ export interface FileRoutesByFullPath {
   '/listen': typeof ListenRoute
   '/music': typeof MusicRoute
   '/photos': typeof PhotosRoute
-  '/shows': typeof ShowsRouteWithChildren
   '/stories': typeof StoriesRoute
   '/videos': typeof VideosRoute
   '/win': typeof WinRoute
   '/admin/login': typeof AdminLoginRoute
   '/shows/$slug': typeof ShowsSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/shows/': typeof ShowsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -103,13 +103,13 @@ export interface FileRoutesByTo {
   '/listen': typeof ListenRoute
   '/music': typeof MusicRoute
   '/photos': typeof PhotosRoute
-  '/shows': typeof ShowsRouteWithChildren
   '/stories': typeof StoriesRoute
   '/videos': typeof VideosRoute
   '/win': typeof WinRoute
   '/admin/login': typeof AdminLoginRoute
   '/shows/$slug': typeof ShowsSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/shows': typeof ShowsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -118,13 +118,13 @@ export interface FileRoutesById {
   '/listen': typeof ListenRoute
   '/music': typeof MusicRoute
   '/photos': typeof PhotosRoute
-  '/shows': typeof ShowsRouteWithChildren
   '/stories': typeof StoriesRoute
   '/videos': typeof VideosRoute
   '/win': typeof WinRoute
   '/admin/login': typeof AdminLoginRoute
   '/shows/$slug': typeof ShowsSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/shows/': typeof ShowsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -134,13 +134,13 @@ export interface FileRouteTypes {
     | '/listen'
     | '/music'
     | '/photos'
-    | '/shows'
     | '/stories'
     | '/videos'
     | '/win'
     | '/admin/login'
     | '/shows/$slug'
     | '/admin/'
+    | '/shows/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -148,13 +148,13 @@ export interface FileRouteTypes {
     | '/listen'
     | '/music'
     | '/photos'
-    | '/shows'
     | '/stories'
     | '/videos'
     | '/win'
     | '/admin/login'
     | '/shows/$slug'
     | '/admin'
+    | '/shows'
   id:
     | '__root__'
     | '/'
@@ -162,13 +162,13 @@ export interface FileRouteTypes {
     | '/listen'
     | '/music'
     | '/photos'
-    | '/shows'
     | '/stories'
     | '/videos'
     | '/win'
     | '/admin/login'
     | '/shows/$slug'
     | '/admin/'
+    | '/shows/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -177,12 +177,13 @@ export interface RootRouteChildren {
   ListenRoute: typeof ListenRoute
   MusicRoute: typeof MusicRoute
   PhotosRoute: typeof PhotosRoute
-  ShowsRoute: typeof ShowsRouteWithChildren
   StoriesRoute: typeof StoriesRoute
   VideosRoute: typeof VideosRoute
   WinRoute: typeof WinRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  ShowsSlugRoute: typeof ShowsSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  ShowsIndexRoute: typeof ShowsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -206,13 +207,6 @@ declare module '@tanstack/react-router' {
       path: '/stories'
       fullPath: '/stories'
       preLoaderRoute: typeof StoriesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/shows': {
-      id: '/shows'
-      path: '/shows'
-      fullPath: '/shows'
-      preLoaderRoute: typeof ShowsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/photos': {
@@ -250,6 +244,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shows/': {
+      id: '/shows/'
+      path: '/shows'
+      fullPath: '/shows/'
+      preLoaderRoute: typeof ShowsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/': {
       id: '/admin/'
       path: '/admin'
@@ -259,10 +260,10 @@ declare module '@tanstack/react-router' {
     }
     '/shows/$slug': {
       id: '/shows/$slug'
-      path: '/$slug'
+      path: '/shows/$slug'
       fullPath: '/shows/$slug'
       preLoaderRoute: typeof ShowsSlugRouteImport
-      parentRoute: typeof ShowsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/admin/login': {
       id: '/admin/login'
@@ -274,28 +275,19 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface ShowsRouteChildren {
-  ShowsSlugRoute: typeof ShowsSlugRoute
-}
-
-const ShowsRouteChildren: ShowsRouteChildren = {
-  ShowsSlugRoute: ShowsSlugRoute,
-}
-
-const ShowsRouteWithChildren = ShowsRoute._addFileChildren(ShowsRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   ListenRoute: ListenRoute,
   MusicRoute: MusicRoute,
   PhotosRoute: PhotosRoute,
-  ShowsRoute: ShowsRouteWithChildren,
   StoriesRoute: StoriesRoute,
   VideosRoute: VideosRoute,
   WinRoute: WinRoute,
   AdminLoginRoute: AdminLoginRoute,
+  ShowsSlugRoute: ShowsSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
+  ShowsIndexRoute: ShowsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
