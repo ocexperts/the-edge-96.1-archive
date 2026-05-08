@@ -74,7 +74,7 @@ function ShowDetail() {
 
             <h2 className="font-display text-2xl text-hot-pink tracking-widest mt-8">SIGNATURE SEGMENTS</h2>
             <ul className="mt-3 space-y-2">
-              {show.segments.map((seg) => (
+              {show.segments.map((seg: string) => (
                 <li key={seg} className="pl-4 border-l-4 border-hot-pink text-white/90">{seg}</li>
               ))}
             </ul>
