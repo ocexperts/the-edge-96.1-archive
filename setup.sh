@@ -11,7 +11,7 @@
 set -euo pipefail
 
 APP_NAME="cada"
-PORT="${PORT:-3000}"
+PORT="${PORT:-8081}"
 HOST="${HOST:-0.0.0.0}"
 DOMAIN="${DOMAIN:-cada.au}"
 
