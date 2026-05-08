@@ -12,4 +12,13 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
   },
+  vite: {
+    preview: {
+      allowedHosts: ["cada.au", "www.cada.au"],
+      host: true,
+    },
+    server: {
+      allowedHosts: ["cada.au", "www.cada.au"],
+    },
+  },
 });
