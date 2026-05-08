@@ -9,8 +9,50 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WinRouteImport } from './routes/win'
+import { Route as VideosRouteImport } from './routes/videos'
+import { Route as ShowsRouteImport } from './routes/shows'
+import { Route as PhotosRouteImport } from './routes/photos'
+import { Route as MusicRouteImport } from './routes/music'
+import { Route as ListenRouteImport } from './routes/listen'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
+const WinRoute = WinRouteImport.update({
+  id: '/win',
+  path: '/win',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VideosRoute = VideosRouteImport.update({
+  id: '/videos',
+  path: '/videos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShowsRoute = ShowsRouteImport.update({
+  id: '/shows',
+  path: '/shows',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PhotosRoute = PhotosRouteImport.update({
+  id: '/photos',
+  path: '/photos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MusicRoute = MusicRouteImport.update({
+  id: '/music',
+  path: '/music',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ListenRoute = ListenRouteImport.update({
+  id: '/listen',
+  path: '/listen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +61,130 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/listen': typeof ListenRoute
+  '/music': typeof MusicRoute
+  '/photos': typeof PhotosRoute
+  '/shows': typeof ShowsRoute
+  '/videos': typeof VideosRoute
+  '/win': typeof WinRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/listen': typeof ListenRoute
+  '/music': typeof MusicRoute
+  '/photos': typeof PhotosRoute
+  '/shows': typeof ShowsRoute
+  '/videos': typeof VideosRoute
+  '/win': typeof WinRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/listen': typeof ListenRoute
+  '/music': typeof MusicRoute
+  '/photos': typeof PhotosRoute
+  '/shows': typeof ShowsRoute
+  '/videos': typeof VideosRoute
+  '/win': typeof WinRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/listen'
+    | '/music'
+    | '/photos'
+    | '/shows'
+    | '/videos'
+    | '/win'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/listen'
+    | '/music'
+    | '/photos'
+    | '/shows'
+    | '/videos'
+    | '/win'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/listen'
+    | '/music'
+    | '/photos'
+    | '/shows'
+    | '/videos'
+    | '/win'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  ListenRoute: typeof ListenRoute
+  MusicRoute: typeof MusicRoute
+  PhotosRoute: typeof PhotosRoute
+  ShowsRoute: typeof ShowsRoute
+  VideosRoute: typeof VideosRoute
+  WinRoute: typeof WinRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/win': {
+      id: '/win'
+      path: '/win'
+      fullPath: '/win'
+      preLoaderRoute: typeof WinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/videos': {
+      id: '/videos'
+      path: '/videos'
+      fullPath: '/videos'
+      preLoaderRoute: typeof VideosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shows': {
+      id: '/shows'
+      path: '/shows'
+      fullPath: '/shows'
+      preLoaderRoute: typeof ShowsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/photos': {
+      id: '/photos'
+      path: '/photos'
+      fullPath: '/photos'
+      preLoaderRoute: typeof PhotosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/music': {
+      id: '/music'
+      path: '/music'
+      fullPath: '/music'
+      preLoaderRoute: typeof MusicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/listen': {
+      id: '/listen'
+      path: '/listen'
+      fullPath: '/listen'
+      preLoaderRoute: typeof ListenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,17 +197,14 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  ListenRoute: ListenRoute,
+  MusicRoute: MusicRoute,
+  PhotosRoute: PhotosRoute,
+  ShowsRoute: ShowsRoute,
+  VideosRoute: VideosRoute,
+  WinRoute: WinRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
