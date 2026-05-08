@@ -1,9 +1,15 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import {
+  listAllStories,
+  setStoryHidden,
+  deleteStory,
+  type Story,
+} from "@/lib/stories.functions";
 import bgPattern from "@/assets/bg-pattern.jpg";
 import { Trash2, EyeOff, Eye, LogOut, Loader2 } from "lucide-react";
 
@@ -17,21 +23,14 @@ export const Route = createFileRoute("/admin/")({
   component: AdminPage,
 });
 
-type AdminStory = {
-  id: string;
-  name: string;
-  location: string;
-  title: string;
-  body: string;
-  created_at: string;
-  hearts: number;
-  hidden: boolean;
-};
-
 function AdminPage() {
   const navigate = useNavigate();
-  const { user, isAdmin, loading } = useAuth();
-  const [stories, setStories] = useState<AdminStory[]>([]);
+  const { user, isAdmin, loading, signOut } = useAuth();
+  const list = useServerFn(listAllStories);
+  const toggle = useServerFn(setStoryHidden);
+  const remove = useServerFn(deleteStory);
+
+  const [stories, setStories] = useState<Story[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [fetching, setFetching] = useState(true);
 
@@ -43,35 +42,36 @@ function AdminPage() {
 
   async function load() {
     setFetching(true);
-    const { data } = await supabase
-      .from("stories")
-      .select("*")
-      .order("created_at", { ascending: false });
-    setStories(data ?? []);
-    setFetching(false);
+    try {
+      const r = await list();
+      setStories(r.stories);
+    } finally {
+      setFetching(false);
+    }
   }
 
   useEffect(() => {
     if (isAdmin) load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAdmin]);
 
-  async function toggleHidden(s: AdminStory) {
+  async function toggleHidden(s: Story) {
     setBusy(s.id);
-    await supabase.from("stories").update({ hidden: !s.hidden }).eq("id", s.id);
+    await toggle({ data: { id: s.id, hidden: !s.hidden } });
     setBusy(null);
     load();
   }
 
-  async function remove(id: string) {
+  async function handleDelete(id: string) {
     if (!confirm("Delete this story permanently?")) return;
     setBusy(id);
-    await supabase.from("stories").delete().eq("id", id);
+    await remove({ data: { id } });
     setBusy(null);
     load();
   }
 
-  async function signOut() {
-    await supabase.auth.signOut();
+  async function handleSignOut() {
+    await signOut();
     navigate({ to: "/admin/login" });
   }
 
@@ -107,7 +107,7 @@ function AdminPage() {
               View public wall
             </Link>
             <button
-              onClick={signOut}
+              onClick={handleSignOut}
               className="inline-flex items-center gap-2 border border-hot-pink/40 text-hot-pink hover:bg-hot-pink hover:text-hot-pink-foreground rounded-md px-3 py-1.5 transition-colors"
             >
               <LogOut className="w-4 h-4" /> Sign out
@@ -156,7 +156,7 @@ function AdminPage() {
                       {s.hidden ? "Unhide" : "Hide"}
                     </button>
                     <button
-                      onClick={() => remove(s.id)}
+                      onClick={() => handleDelete(s.id)}
                       disabled={busy === s.id}
                       className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-md border border-red-500/40 text-red-300 hover:bg-red-500 hover:text-white transition-colors disabled:opacity-50"
                     >

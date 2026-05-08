@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { supabase } from "@/integrations/supabase/client";
+import { listStories, postStory, type Story } from "@/lib/stories.functions";
 import bgPattern from "@/assets/bg-pattern.jpg";
 import { Send, Loader2 } from "lucide-react";
 
@@ -25,16 +26,6 @@ export const Route = createFileRoute("/stories")({
   component: StoriesPage,
 });
 
-type Story = {
-  id: string;
-  name: string;
-  location: string;
-  title: string;
-  body: string;
-  created_at: string;
-  hearts: number;
-};
-
 function timeAgo(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
   const m = Math.floor(diff / 60000);
@@ -49,6 +40,9 @@ function timeAgo(iso: string) {
 }
 
 function StoriesPage() {
+  const list = useServerFn(listStories);
+  const post = useServerFn(postStory);
+
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
@@ -60,21 +54,19 @@ function StoriesPage() {
   const [error, setError] = useState<string | null>(null);
 
   async function load() {
-    const { data, error } = await supabase
-      .from("stories")
-      .select("id, name, location, title, body, created_at, hearts")
-      .order("created_at", { ascending: false })
-      .limit(200);
-    if (error) {
-      setError(error.message);
-    } else {
-      setStories(data ?? []);
+    try {
+      const r = await list();
+      setStories(r.stories);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   useEffect(() => {
     load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -86,24 +78,27 @@ function StoriesPage() {
     const trimmedLocation = location.trim().slice(0, 60);
     if (!trimmedName || !trimmedTitle || !trimmedBody) return;
     setSubmitting(true);
-    const { error } = await supabase.from("stories").insert({
-      name: trimmedName,
-      location: trimmedLocation,
-      title: trimmedTitle,
-      body: trimmedBody,
-    });
-    setSubmitting(false);
-    if (error) {
-      setError(error.message);
-      return;
+    try {
+      await post({
+        data: {
+          name: trimmedName,
+          location: trimmedLocation,
+          title: trimmedTitle,
+          body: trimmedBody,
+        },
+      });
+      setName("");
+      setLocation("");
+      setTitle("");
+      setBody("");
+      setPosted(true);
+      setTimeout(() => setPosted(false), 3000);
+      load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to post");
+    } finally {
+      setSubmitting(false);
     }
-    setName("");
-    setLocation("");
-    setTitle("");
-    setBody("");
-    setPosted(true);
-    setTimeout(() => setPosted(false), 3000);
-    load();
   }
 
   return (
