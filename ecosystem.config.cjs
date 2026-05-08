@@ -3,7 +3,8 @@ module.exports = {
   apps: [
     {
       name: "cada",
-      script: ".output/server/index.mjs",
+      script: "node_modules/vite/bin/vite.js",
+      args: "preview --host 0.0.0.0 --port 3000 --strictPort",
       env: {
         NODE_ENV: "production",
         HOST: process.env.HOST || "0.0.0.0",

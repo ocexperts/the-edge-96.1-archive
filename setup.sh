@@ -5,7 +5,7 @@
 #   ./setup.sh            # install + build + (re)start via pm2
 #   ./setup.sh dev        # run dev server
 #   ./setup.sh build      # build only
-#   ./setup.sh start      # start built server (no rebuild)
+#   ./setup.sh start      # start built server with vite preview (no rebuild)
 #   ./setup.sh nginx      # print example nginx config for cada.au
 
 set -euo pipefail
@@ -48,20 +48,24 @@ build_app() {
 }
 
 start_app() {
-  if [ ! -d ".output" ]; then
-    echo "No .output/ found. Run: ./setup.sh build"
-    exit 1
+  if [ ! -d "dist" ] && [ ! -d ".wrangler" ] && [ ! -d ".output" ]; then
+    echo "No build output found. Building first..."
+    install_deps
+    build_app
   fi
 
   if have pm2; then
     echo "==> (Re)starting via pm2 on ${HOST}:${PORT}"
-    HOST="$HOST" PORT="$PORT" pm2 startOrReload ecosystem.config.cjs --only "$APP_NAME" 2>/dev/null || \
-      HOST="$HOST" PORT="$PORT" pm2 start .output/server/index.mjs --name "$APP_NAME" --update-env
+    HOST="$HOST" PORT="$PORT" pm2 startOrReload ecosystem.config.cjs --only "$APP_NAME" --update-env
     pm2 save
   else
     echo "pm2 not found — starting in foreground on ${HOST}:${PORT}"
     echo "(install pm2 for background: npm i -g pm2)"
-    HOST="$HOST" PORT="$PORT" node .output/server/index.mjs
+    if have bun; then
+      bunx vite preview --host "$HOST" --port "$PORT" --strictPort
+    else
+      npx vite preview --host "$HOST" --port "$PORT" --strictPort
+    fi
   fi
 }
 
