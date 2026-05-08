@@ -1,7 +1,11 @@
 import { Link } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 import { EdgeLogo } from "./EdgeLogo";
 import { Equalizer } from "./Equalizer";
-import { Play, Search, Facebook, Twitter } from "lucide-react";
+import { Play, Pause, Search, Facebook, Twitter } from "lucide-react";
+
+const STREAM_URL =
+  "https://playerservices.streamtheworld.com/api/livestream-redirect/EDGEREWIND_S01AAC.aac";
 
 const NAV = [
   { label: "HOME", to: "/" },
@@ -15,6 +19,55 @@ const NAV = [
 ] as const;
 
 export function SiteHeader() {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [playing, setPlaying] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const audio = new Audio();
+    audio.preload = "none";
+    audio.crossOrigin = "anonymous";
+    audioRef.current = audio;
+    const onPlay = () => { setPlaying(true); setLoading(false); };
+    const onPause = () => setPlaying(false);
+    const onWaiting = () => setLoading(true);
+    const onPlaying = () => setLoading(false);
+    const onError = () => { setPlaying(false); setLoading(false); };
+    audio.addEventListener("play", onPlay);
+    audio.addEventListener("pause", onPause);
+    audio.addEventListener("waiting", onWaiting);
+    audio.addEventListener("playing", onPlaying);
+    audio.addEventListener("error", onError);
+    return () => {
+      audio.pause();
+      audio.removeEventListener("play", onPlay);
+      audio.removeEventListener("pause", onPause);
+      audio.removeEventListener("waiting", onWaiting);
+      audio.removeEventListener("playing", onPlaying);
+      audio.removeEventListener("error", onError);
+      audioRef.current = null;
+    };
+  }, []);
+
+  const toggle = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (playing) {
+      audio.pause();
+      audio.removeAttribute("src");
+      audio.load();
+      return;
+    }
+    setLoading(true);
+    // Cache-bust to force a fresh stream connection
+    audio.src = `${STREAM_URL}?t=${Date.now()}`;
+    try {
+      await audio.play();
+    } catch {
+      setLoading(false);
+    }
+  };
+
   return (
     <header className="relative z-20">
       <div className="container mx-auto px-4 pt-6 pb-3 flex flex-wrap items-center gap-6">
@@ -33,9 +86,15 @@ export function SiteHeader() {
               <p className="text-xs text-muted-foreground">The Edge 96.1 · The Memorial Stream</p>
             </div>
           </div>
-          <button className="rounded-lg bg-hot-pink hover:bg-hot-pink/90 text-hot-pink-foreground font-bold px-5 flex items-center gap-2 shadow-pink animate-pulse-glow">
-            <Play className="w-5 h-5 fill-current" />
-            <span className="font-display tracking-wider text-lg">LISTEN LIVE</span>
+          <button
+            onClick={toggle}
+            aria-label={playing ? "Stop live stream" : "Play live stream"}
+            className="rounded-lg bg-hot-pink hover:bg-hot-pink/90 text-hot-pink-foreground font-bold px-5 flex items-center gap-2 shadow-pink animate-pulse-glow disabled:opacity-70"
+          >
+            {playing ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current" />}
+            <span className="font-display tracking-wider text-lg">
+              {loading ? "BUFFERING…" : playing ? "STOP" : "LISTEN LIVE"}
+            </span>
           </button>
         </div>
 
