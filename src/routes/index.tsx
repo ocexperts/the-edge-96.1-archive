@@ -27,11 +27,13 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+import { SHOWS } from "@/lib/shows";
+
 const FEATURE_TILES = [
-  { title: "Mike E & Emma's Breakfast", tag: "ICONIC SHOW", img: breakfastShow },
-  { title: "The Friday Night Party Mix", tag: "WEEKEND ANTHEM" },
-  { title: "Pop Hits of the 2010s", tag: "MUSIC" },
-  { title: "Send-Offs From Listeners", tag: "TRIBUTES" },
+  { title: "Mike E & Emma's Breakfast", tag: "ICONIC SHOW", img: breakfastShow, slug: "mike-e-emma" },
+  { title: "Friday Night Party Mix", tag: "WEEKEND ANTHEM", img: SHOWS.find(s => s.slug === "friday-night-party-mix")?.image, slug: "friday-night-party-mix" },
+  { title: "Drive with The Edge", tag: "RUSH HOUR", img: SHOWS.find(s => s.slug === "drive")?.image, slug: "drive" },
+  { title: "The Edge Top 30", tag: "COUNTDOWN", img: SHOWS.find(s => s.slug === "top-30")?.image, slug: "top-30" },
 ];
 
 function Home() {
