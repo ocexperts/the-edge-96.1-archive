@@ -6,7 +6,12 @@
 #   ./setup.sh dev        # run dev server
 #   ./setup.sh build      # build only
 #   ./setup.sh start      # start built server (no rebuild)
+#   ./setup.sh db         # create the database schema (uses $DATABASE_URL)
 #   ./setup.sh nginx      # print example nginx config for cada.au
+#
+# Required env vars at runtime:
+#   DATABASE_URL  e.g. postgres://user:pass@localhost:5432/cada
+#   AUTH_SECRET   random 32+ char string (e.g. `openssl rand -hex 32`)
 
 set -euo pipefail
 
@@ -210,6 +215,21 @@ server {
 EOF
 }
 
+init_db() {
+  if [ -z "${DATABASE_URL:-}" ]; then
+    echo "DATABASE_URL is not set. Example:"
+    echo "  export DATABASE_URL=postgres://cada:secret@localhost:5432/cada"
+    exit 1
+  fi
+  if ! have psql; then
+    echo "psql not found. Install postgresql-client first."
+    exit 1
+  fi
+  echo "==> Applying db/schema.sql to \$DATABASE_URL"
+  psql "$DATABASE_URL" -f db/schema.sql
+  echo "Schema applied. Now visit /admin/login and create the first account — it becomes admin automatically."
+}
+
 cmd="${1:-all}"
 case "$cmd" in
   dev)
@@ -222,6 +242,9 @@ case "$cmd" in
   start)
     ensure_runtime; start_app
     ;;
+  db)
+    init_db
+    ;;
   nginx)
     print_nginx
     ;;
@@ -229,6 +252,6 @@ case "$cmd" in
     ensure_runtime; install_deps; build_app; start_app
     ;;
   *)
-    echo "Usage: $0 [dev|build|start|nginx|all]"; exit 1
+    echo "Usage: $0 [dev|build|start|db|nginx|all]"; exit 1
     ;;
 esac
